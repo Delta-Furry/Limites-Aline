@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Calculadora de Límites – Aline Lira Resendiz (Grupo 1643)</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Calculadora de Límites</h1>
+    <p>Estudiante: <strong>Aline Lira Resendiz</strong> – Grupo 1643</p>
+    
+    <div class="input-group">
+      <textarea id="expr" placeholder="Escribe la expresión, ej.: (sin(x) - x)/x^3"></textarea>
+    </div>
+    
+    <div class="input-group">
+      <input type="text" id="variable" placeholder="Variable (e.g., x)" value="x">
+      <input type="text" id="punto" placeholder="Punto (puede ser '0', '∞', '-∞')">
+    </div>
+
+    <div class="btns-trig">
+      <button onclick="insertFn('sin(')">sin</button>
+      <button onclick="insertFn('cos(')">cos</button>
+      <button onclick="insertFn('tan(')">tan</button>
+      <button onclick="insertFn('ln(')">ln</button>
+      <button onclick="insertFn('exp(')">exp</button>
+    </div>
+
+    <button id="calc" onclick="calcularLimite()">Calcular</button>
+    
+    <div id="resultado"></div>
+  </div>
+  <script src="scripts.js"></script>
+</body>
+</html>
