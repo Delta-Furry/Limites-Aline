@@ -11,9 +11,10 @@
       background: linear-gradient(to right, #141e30, #243b55);
       color: #fff;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
       min-height: 100vh;
+      padding: 40px 10px;
     }
     .calculator {
       background: #1c1f2b;
@@ -22,10 +23,12 @@
       box-shadow: 0 10px 25px rgba(0,0,0,0.3);
       width: 90%;
       max-width: 500px;
+      margin-bottom: 40px;
     }
     h1 {
       text-align: center;
       color: #66fcf1;
+      font-size: 1.5em;
     }
     .field {
       margin-bottom: 15px;
@@ -63,7 +66,7 @@
       background: #66fcf1;
       color: #000;
     }
-    button#calcular {
+    button {
       width: 100%;
       background: #66fcf1;
       color: #000;
@@ -74,7 +77,7 @@
       border: none;
       cursor: pointer;
     }
-    #resultado {
+    #resultado, #resultadoDerivada {
       margin-top: 20px;
       padding: 15px;
       background: #0b0c10;
@@ -91,6 +94,7 @@
   </style>
 </head>
 <body>
+
   <div class="calculator">
     <h1>Calculadora de Límites</h1>
     <p style="text-align:center;font-size:0.9em;opacity:0.7;">Aline Lira Resendiz – Grupo 1643</p>
@@ -101,13 +105,13 @@
     </div>
 
     <div class="field">
-      <label>Variable(s) (puedes usar <strong>x</strong>, <strong>y</strong> o ambas separado por coma):</label>
+      <label>Variable(s):</label>
       <input type="text" id="variable" placeholder="Ej: x,y" value="x,y">
-      <small>Ejemplo: "x" o "y" o "x,y"</small>
+      <small>Ejemplo: \"x\" o \"y\" o \"x,y\"</small>
     </div>
 
     <div class="field">
-      <label>Punto (límite en) (<code>1</code> para ∞, <code>2</code> para -∞):</label>
+      <label>Punto (1 = ∞, 2 = -∞):</label>
       <input type="text" id="punto" placeholder="Ej: 0">
     </div>
 
@@ -122,9 +126,26 @@
       <button onclick="insertFn('*')">*</button>
     </div>
 
-    <button id="calcular" onclick="calcularLimite()">Calcular Límite</button>
-
+    <button onclick="calcularLimite()">Calcular Límite</button>
     <div id="resultado"></div>
+  </div>
+
+  <div class="calculator">
+    <h1>Calculadora de Derivadas</h1>
+    <p style="text-align:center;font-size:0.9em;opacity:0.7;">(También puedes usar x, y o ambas)</p>
+
+    <div class="field">
+      <label>Expresión:</label>
+      <textarea id="derivExpr" rows="3">x^2 + 3*y</textarea>
+    </div>
+
+    <div class="field">
+      <label>Derivar respecto a:</label>
+      <input type="text" id="derivVar" placeholder="Ej: x">
+    </div>
+
+    <button onclick="calcularDerivada()">Calcular Derivada</button>
+    <div id="resultadoDerivada"></div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/mathjs@11/lib/browser/math.min.js"></script>
@@ -145,23 +166,20 @@
       var punto = document.getElementById("punto").value.trim();
       var resultadoEl = document.getElementById("resultado");
 
-      // Validar campos
       if (!expr || !variableInput || !punto) {
         resultadoEl.textContent = "⚠️ Por favor, completa todos los campos.";
         return;
       }
 
-      // Variables permitidas
-      var vars = variableInput.split(',').map(function(v) { return v.trim(); });
+      var vars = variableInput.split(',').map(v => v.trim());
       var validVars = ['x','y'];
       for (var v of vars) {
-        if (validVars.indexOf(v) < 0) {
+        if (!validVars.includes(v)) {
           resultadoEl.textContent = "⚠️ Variable inválida '" + v + "'. Usa 'x', 'y' o 'x,y'.";
           return;
         }
       }
 
-      // Convertir punto
       if (punto === '1') punto = Infinity;
       else if (punto === '2') punto = -Infinity;
       else if (!isNaN(punto)) punto = parseFloat(punto);
@@ -176,16 +194,13 @@
         const code = node.compile();
         var result;
 
-        if (punto === Infinity) {
-          vars.forEach(function(v) { scope[v] = 1e10; });
-          result = code.evaluate(scope);
-        } else if (punto === -Infinity) {
-          vars.forEach(function(v) { scope[v] = -1e10; });
+        if (punto === Infinity || punto === -Infinity) {
+          vars.forEach(v => scope[v] = punto > 0 ? 1e10 : -1e10);
           result = code.evaluate(scope);
         } else {
-          vars.forEach(function(v) { scope[v] = punto - 1e-6; });
+          vars.forEach(v => scope[v] = punto - 1e-6);
           let left = code.evaluate(scope);
-          vars.forEach(function(v) { scope[v] = punto + 1e-6; });
+          vars.forEach(v => scope[v] = punto + 1e-6);
           let right = code.evaluate(scope);
           result = (left + right) / 2;
         }
@@ -196,5 +211,23 @@
       }
     }
 
+    function calcularDerivada() {
+      const expr = document.getElementById("derivExpr").value.trim();
+      const variable = document.getElementById("derivVar").value.trim();
+      const resultado = document.getElementById("resultadoDerivada");
+
+      if (!expr || !variable) {
+        resultado.textContent = "⚠️ Completa todos los campos para derivar.";
+        return;
+      }
+
+      try {
+        const deriv = math.derivative(expr, variable);
+        resultado.textContent = `Derivada respecto a ${variable}: ${deriv.toString()}`;
+      } catch (e) {
+        resultado.textContent = "❌ Error al derivar. Verifica la expresión y variable.";
+      }
+    }
+  </script>
 </body>
 </html>
