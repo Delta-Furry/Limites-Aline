@@ -34,7 +34,7 @@
       display: block;
       margin-bottom: 5px;
     }
-    input, textarea, select {
+    input, textarea {
       width: 100%;
       padding: 10px;
       font-size: 1em;
@@ -97,16 +97,17 @@
 
     <div class="field">
       <label>Expresión:</label>
-      <textarea id="expr">(sin(x)-x)/x^3</textarea>
+      <textarea id="expr" rows="3">(sin(x)-x)/x^3</textarea>
     </div>
 
     <div class="field">
-      <label>Variable:</label>
-      <input type="text" id="variable" placeholder="Ej: x" value="x">
+      <label>Variable(s) (puedes usar <strong>x</strong>, <strong>y</strong> o ambas separado por coma):</label>
+      <input type="text" id="variable" placeholder="Ej: x,y" value="x,y">
+      <small>Ejemplo: "x" o "y" o "x,y"</small>
     </div>
 
     <div class="field">
-      <label>Punto (límite en) (escribe 1 para ∞, 2 para -∞):</label>
+      <label>Punto (límite en) (<code>1</code> para ∞, <code>2</code> para -∞):</label>
       <input type="text" id="punto" placeholder="Ej: 0">
     </div>
 
@@ -140,42 +141,58 @@
 
     function calcularLimite() {
       var expr = document.getElementById("expr").value.trim();
-      var variable = document.getElementById("variable").value.trim();
+      var variableInput = document.getElementById("variable").value.trim();
       var punto = document.getElementById("punto").value.trim();
+      var resultadoEl = document.getElementById("resultado");
 
-      if (!expr || !variable || !punto) {
-        document.getElementById("resultado").textContent = "⚠️ Llena todos los campos";
+      // Validar campos
+      if (!expr || !variableInput || !punto) {
+        resultadoEl.textContent = "⚠️ Por favor, completa todos los campos.";
         return;
       }
 
-      if (punto === "1") punto = Infinity;
-      else if (punto === "2") punto = -Infinity;
+      // Variables permitidas
+      var vars = variableInput.split(',').map(function(v) { return v.trim(); });
+      var validVars = ['x','y'];
+      for (var v of vars) {
+        if (validVars.indexOf(v) < 0) {
+          resultadoEl.textContent = "⚠️ Variable inválida '" + v + "'. Usa 'x', 'y' o 'x,y'.";
+          return;
+        }
+      }
+
+      // Convertir punto
+      if (punto === '1') punto = Infinity;
+      else if (punto === '2') punto = -Infinity;
       else if (!isNaN(punto)) punto = parseFloat(punto);
+      else {
+        resultadoEl.textContent = "⚠️ Punto inválido. Usa un número o '1'/'2'.";
+        return;
+      }
 
       try {
         const scope = {};
         const node = math.parse(expr);
         const code = node.compile();
-
-        let result;
+        var result;
 
         if (punto === Infinity) {
-          scope[variable] = 1e10;
+          vars.forEach(function(v) { scope[v] = 1e10; });
           result = code.evaluate(scope);
         } else if (punto === -Infinity) {
-          scope[variable] = -1e10;
+          vars.forEach(function(v) { scope[v] = -1e10; });
           result = code.evaluate(scope);
         } else {
-          scope[variable] = punto - 1e-6;
+          vars.forEach(function(v) { scope[v] = punto - 1e-6; });
           let left = code.evaluate(scope);
-          scope[variable] = punto + 1e-6;
+          vars.forEach(function(v) { scope[v] = punto + 1e-6; });
           let right = code.evaluate(scope);
           result = (left + right) / 2;
         }
 
-        document.getElementById("resultado").textContent = `Límite ≈ ${result}`;
+        resultadoEl.textContent = `Límite ≈ ${result}`;
       } catch (e) {
-        document.getElementById("resultado").textContent = "❌ Error: " + e.message;
+        resultadoEl.textContent = "❌ Error al calcular. Verifica la expresión.";
       }
     }
   </script>
