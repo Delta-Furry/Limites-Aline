@@ -7,10 +7,19 @@
 <style>
 body{margin:0;font-family:'Segoe UI',sans-serif;background:linear-gradient(to right,#141e30,#243b55);color:#fff;display:flex;flex-direction:column;align-items:center;padding:40px 10px}
 .calculator{background:#1c1f2b;padding:30px;border-radius:20px;box-shadow:0 10px 25px rgba(0,0,0,0.3);width:90%;max-width:500px;margin-bottom:40px}
-h1{text-align:center;color:#66fcf1}.field{margin-bottom:15px}label{display:block;margin-bottom:5px}input,textarea{width:100%;padding:10px;font-size:1em;border-radius:10px;border:none;background:#2c2f3e;color:#fff}.btn-group{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:15px}.btn-group button{flex:1;background:#45a29e;border:none;padding:10px;border-radius:10px;color:#fff;font-weight:bold;cursor:pointer}.btn-group button:hover{background:#66fcf1;color:#000}button{width:100%;background:#66fcf1;color:#000;padding:12px;font-weight:bold;font-size:1.1em;border-radius:12px;border:none;cursor:pointer}#resultado,#resultadoDerivada{margin-top:20px;padding:15px;background:#0b0c10;border-radius:10px;text-align:center;font-size:1.2em}small{display:block;text-align:center;margin-top:10px;opacity:0.6}
+h1{text-align:center;color:#66fcf1}.field{margin-bottom:15px}label{display:block;margin-bottom:5px}
+input,textarea{width:100%;padding:10px;font-size:1em;border-radius:10px;border:none;background:#2c2f3e;color:#fff}
+.btn-group{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:15px}
+.btn-group button{flex:1;background:#45a29e;border:none;padding:10px;border-radius:10px;color:#fff;font-weight:bold;cursor:pointer}
+.btn-group button:hover{background:#66fcf1;color:#000}
+button{width:100%;background:#66fcf1;color:#000;padding:12px;font-weight:bold;font-size:1.1em;border-radius:12px;border:none;cursor:pointer}
+#resultado,#resultadoDerivada{margin-top:20px;padding:15px;background:#0b0c10;border-radius:10px;text-align:center;font-size:1.2em}
+small{display:block;text-align:center;margin-top:10px;opacity:0.6}
 </style>
 </head>
 <body>
+
+<!-- CALCULADORA DE LÍMITES -->
 <div class="calculator">
 <h1>Calculadora de Límites</h1>
 <p style="text-align:center;font-size:0.9em;opacity:0.7;">Aline Lira Resendiz – Grupo 1643</p>
@@ -18,21 +27,40 @@ h1{text-align:center;color:#66fcf1}.field{margin-bottom:15px}label{display:block
 <div class="field"><label>Variable(s):</label><input type="text" id="variable" placeholder="Ej: x,y" value="x,y"><small>Ejemplo: "x" o "x,y"</small></div>
 <div class="field"><label>Punto (separado por comas):</label><input type="text" id="punto" placeholder="Ej: 1,2"><small>Ejemplo: x→1, y→2 → escribe: 1,2</small></div>
 <div class="btn-group">
-<button onclick="insertFn('sin(')">sin</button><button onclick="insertFn('cos(')">cos</button><button onclick="insertFn('tan(')">tan</button><button onclick="insertFn('ln(')">ln</button><button onclick="insertFn('exp(')">exp</button><button onclick="insertFn('^')">^</button><button onclick="insertFn('/')">/</button><button onclick="insertFn('*')">*</button>
+<button onclick="insertFn('sin(')">sin</button><button onclick="insertFn('cos(')">cos</button><button onclick="insertFn('tan(')">tan</button>
+<button onclick="insertFn('ln(')">ln</button><button onclick="insertFn('log(')">log</button><button onclick="insertFn('exp(')">exp</button>
+<button onclick="insertFn('^')">^</button><button onclick="insertFn('/')">/</button><button onclick="insertFn('*')">*</button>
 </div>
 <button onclick="calcularLimite()">Calcular Límite</button>
 <div id="resultado"></div>
 </div>
+
+<!-- CALCULADORA DE DERIVADAS -->
 <div class="calculator">
 <h1>Calculadora de Derivadas</h1>
-<div class="field"><label>Función:</label><textarea id="funcionDerivada" rows="2">x^2 + 3*x + 2</textarea></div>
+<div class="field"><label>Función:</label><textarea id="funcionDerivada" rows="2">ln(x^2 + 1)</textarea></div>
 <div class="field"><label>Variable:</label><input type="text" id="varDerivada" placeholder="Ej: x" value="x"></div>
+<div class="btn-group">
+<button onclick="insertFnDer('sin(')">sin</button><button onclick="insertFnDer('cos(')">cos</button><button onclick="insertFnDer('tan(')">tan</button>
+<button onclick="insertFnDer('ln(')">ln</button><button onclick="insertFnDer('log(')">log</button><button onclick="insertFnDer('exp(')">exp</button>
+<button onclick="insertFnDer('^')">^</button><button onclick="insertFnDer('/')">/</button><button onclick="insertFnDer('*')">*</button>
+</div>
 <button onclick="calcularDerivada()">Calcular Derivada</button>
 <div id="resultadoDerivada"></div>
 </div>
+
 <script src="https://cdn.jsdelivr.net/npm/mathjs@11/lib/browser/math.min.js"></script>
 <script>
-function insertFn(txt){let ta=document.getElementById("expr"),start=ta.selectionStart,end=ta.selectionEnd,current=ta.value;ta.value=current.substring(0,start)+txt+current.substring(end);ta.focus();ta.selectionStart=ta.selectionEnd=start+txt.length}
+function insertFn(txt){
+let ta=document.getElementById("expr"),start=ta.selectionStart,end=ta.selectionEnd,current=ta.value;
+ta.value=current.substring(0,start)+txt+current.substring(end);ta.focus();
+ta.selectionStart=ta.selectionEnd=start+txt.length;
+}
+function insertFnDer(txt){
+let ta=document.getElementById("funcionDerivada"),start=ta.selectionStart,end=ta.selectionEnd,current=ta.value;
+ta.value=current.substring(0,start)+txt+current.substring(end);ta.focus();
+ta.selectionStart=ta.selectionEnd=start+txt.length;
+}
 function calcularLimite(){
 const expr=document.getElementById("expr").value.trim(),varsInput=document.getElementById("variable").value.trim(),puntoInput=document.getElementById("punto").value.trim(),resEl=document.getElementById("resultado");
 if(!expr||!varsInput||!puntoInput){resEl.textContent="⚠️ Por favor, completa todos los campos.";return;}
@@ -40,17 +68,20 @@ const variables=varsInput.split(',').map(v=>v.trim());const puntos=puntoInput.sp
 if(variables.length!==puntos.length){resEl.textContent="⚠️ La cantidad de variables y valores no coincide.";return;}
 try{
 const node=math.parse(expr),code=node.compile();let aproximaciones=[1e-1,1e-2,1e-3,1e-4,1e-5];let resultados=[];
-for(let delta of aproximaciones){let scope1={},scope2={};for(let i=0;i<variables.length;i++){scope1[variables[i]]=puntos[i]-delta;scope2[variables[i]]=puntos[i]+delta}
-let r1=code.evaluate(scope1);let r2=code.evaluate(scope2);resultados.push((r1+r2)/2)}
-let promedio=resultados.reduce((a,b)=>a+b,0)/resultados.length;resEl.textContent=`Límite ≈ ${promedio}`;
-}catch(e){resEl.textContent="❌ Error al calcular. Verifica la expresión.";}}
+for(let delta of aproximaciones){
+let scope1={},scope2={};for(let i=0;i<variables.length;i++){scope1[variables[i]]=puntos[i]-delta;scope2[variables[i]]=puntos[i]+delta}
+let r1=code.evaluate(scope1),r2=code.evaluate(scope2);resultados.push((r1+r2)/2)}
+let promedio=resultados.reduce((a,b)=>a+b,0)/resultados.length;
+resEl.textContent=`Límite ≈ ${promedio}`;
+}catch(e){resEl.textContent="❌ Error al calcular. Verifica la expresión.";}
+}
 function calcularDerivada(){
-const funcion=document.getElementById("funcionDerivada").value.trim();const variable=document.getElementById("varDerivada").value.trim();
-const resultado=document.getElementById("resultadoDerivada");
+const funcion=document.getElementById("funcionDerivada").value.trim();const variable=document.getElementById("varDerivada").value.trim();const resultado=document.getElementById("resultadoDerivada");
 if(!funcion||!variable){resultado.textContent="⚠️ Ingresa la función y variable";return;}
 try{
-const derivada=math.derivative(funcion,variable).toString();resultado.textContent=`Derivada: ${derivada}`;
-}catch(e){resultado.textContent="❌ Error al calcular la derivada.";}
+const expr=math.parse(funcion);const derivada=math.derivative(expr,variable).toString();
+resultado.textContent=`Derivada: ${derivada}`;
+}catch(e){resultado.textContent="❌ Error al calcular la derivada. Asegúrate de que la función esté bien escrita.";}
 }
 </script>
 </body>
