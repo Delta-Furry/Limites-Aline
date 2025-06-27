@@ -194,56 +194,7 @@
       } catch (e) {
         resultadoEl.textContent = "❌ Error al calcular. Verifica la expresión.";
       }
-      ////////////////nuevo
-          <!-- ... todo tu código anterior ... -->
-
-<!-- Nuevo bloque adicional para calcular derivadas -->
-<div class="calculator" style="margin-top: 40px;">
-  <h1>Calculadora de Derivadas</h1>
-  <p style="text-align:center;font-size:0.9em;opacity:0.7;">(¡También disponible para expresiones con x y y!)</p>
-
-  <div class="field">
-    <label>Expresión:</label>
-    <textarea id="derivExpr" rows="3">x^2 + 3*y</textarea>
-  </div>
-
-  <div class="field">
-    <label>Derivar respecto a:</label>
-    <input type="text" id="derivVar" placeholder="Ej: x">
-  </div>
-
-  <button id="derivar" onclick="calcularDerivada()">Calcular Derivada</button>
-
-  <div id="resultadoDerivada" style="margin-top: 20px;
-      padding: 15px;
-      background: #0b0c10;
-      border-radius: 10px;
-      text-align: center;
-      font-size: 1.2em;"></div>
-</div>
-
-<script>
-function calcularDerivada() {
-  const expr = document.getElementById("derivExpr").value.trim();
-  const variable = document.getElementById("derivVar").value.trim();
-  const resultado = document.getElementById("resultadoDerivada");
-
-  if (!expr || !variable) {
-    resultado.textContent = "⚠️ Completa todos los campos para derivar.";
-    return;
-  }
-
-  try {
-    const deriv = math.derivative(expr, variable);
-    resultado.textContent = `Derivada respecto a ${variable}: ${deriv.toString()}`;
-  } catch (e) {
-    resultado.textContent = "❌ Error al derivar. Verifica la expresión y variable.";
-  }
-}
-</script>
-
-  </script>
-    }////nuevo
+    }
 
 </body>
 </html>
