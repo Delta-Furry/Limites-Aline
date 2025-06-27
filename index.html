@@ -142,6 +142,7 @@
       var expr = document.getElementById("expr").value.trim();
       var variable = document.getElementById("variable").value.trim();
       var punto = document.getElementById("punto").value.trim();
+
       if (!expr || !variable || !punto) {
         document.getElementById("resultado").textContent = "⚠️ Llena todos los campos";
         return;
@@ -152,9 +153,27 @@
       else if (!isNaN(punto)) punto = parseFloat(punto);
 
       try {
-        const compiled = math.compile(expr);
-        const result = math.evaluate(`limit(${expr}, ${variable}, ${punto})`);
-        document.getElementById("resultado").textContent = `Límite = ${result}`;
+        const scope = {};
+        const node = math.parse(expr);
+        const code = node.compile();
+
+        let result;
+
+        if (punto === Infinity) {
+          scope[variable] = 1e10;
+          result = code.evaluate(scope);
+        } else if (punto === -Infinity) {
+          scope[variable] = -1e10;
+          result = code.evaluate(scope);
+        } else {
+          scope[variable] = punto - 1e-6;
+          let left = code.evaluate(scope);
+          scope[variable] = punto + 1e-6;
+          let right = code.evaluate(scope);
+          result = (left + right) / 2;
+        }
+
+        document.getElementById("resultado").textContent = `Límite ≈ ${result}`;
       } catch (e) {
         document.getElementById("resultado").textContent = "❌ Error: " + e.message;
       }
