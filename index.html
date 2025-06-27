@@ -2,35 +2,163 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Calculadora de Límites – Aline Lira Resendiz (Grupo 1643)</title>
-  <link rel="stylesheet" href="styles.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #141e30, #243b55);
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .calculator {
+      background: #1c1f2b;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      width: 90%;
+      max-width: 500px;
+    }
+    h1 {
+      text-align: center;
+      color: #66fcf1;
+    }
+    .field {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 10px;
+      font-size: 1em;
+      border-radius: 10px;
+      border: none;
+      background: #2c2f3e;
+      color: #fff;
+    }
+    .btn-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    .btn-group button {
+      flex: 1;
+      background: #45a29e;
+      border: none;
+      padding: 10px;
+      border-radius: 10px;
+      color: #fff;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .btn-group button:hover {
+      background: #66fcf1;
+      color: #000;
+    }
+    button#calcular {
+      width: 100%;
+      background: #66fcf1;
+      color: #000;
+      padding: 12px;
+      font-weight: bold;
+      font-size: 1.1em;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+    }
+    #resultado {
+      margin-top: 20px;
+      padding: 15px;
+      background: #0b0c10;
+      border-radius: 10px;
+      text-align: center;
+      font-size: 1.2em;
+    }
+    small {
+      display: block;
+      text-align: center;
+      margin-top: 10px;
+      opacity: 0.6;
+    }
+  </style>
 </head>
 <body>
-  <div class="container">
+  <div class="calculator">
     <h1>Calculadora de Límites</h1>
-    <p>Estudiante: <strong>Aline Lira Resendiz</strong> – Grupo 1643</p>
-    
-    <div class="input-group">
-      <textarea id="expr" placeholder="Escribe la expresión, ej.: (sin(x) - x)/x^3"></textarea>
-    </div>
-    
-    <div class="input-group">
-      <input type="text" id="variable" placeholder="Variable (e.g., x)" value="x">
-      <input type="text" id="punto" placeholder="Punto (puede ser '0', '∞', '-∞')">
+    <p style="text-align:center;font-size:0.9em;opacity:0.7;">Aline Lira Resendiz – Grupo 1643</p>
+
+    <div class="field">
+      <label>Expresión:</label>
+      <textarea id="expr">(sin(x)-x)/x^3</textarea>
     </div>
 
-    <div class="btns-trig">
+    <div class="field">
+      <label>Variable:</label>
+      <input type="text" id="variable" placeholder="Ej: x" value="x">
+    </div>
+
+    <div class="field">
+      <label>Punto (límite en) (escribe 1 para ∞, 2 para -∞):</label>
+      <input type="text" id="punto" placeholder="Ej: 0">
+    </div>
+
+    <div class="btn-group">
       <button onclick="insertFn('sin(')">sin</button>
       <button onclick="insertFn('cos(')">cos</button>
       <button onclick="insertFn('tan(')">tan</button>
       <button onclick="insertFn('ln(')">ln</button>
       <button onclick="insertFn('exp(')">exp</button>
+      <button onclick="insertFn('^')">^</button>
+      <button onclick="insertFn('/')">/</button>
+      <button onclick="insertFn('*')">*</button>
     </div>
 
-    <button id="calc" onclick="calcularLimite()">Calcular</button>
-    
+    <button id="calcular" onclick="calcularLimite()">Calcular Límite</button>
+
     <div id="resultado"></div>
   </div>
-  <script src="scripts.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/mathjs@11/lib/browser/math.min.js"></script>
+  <script>
+    function insertFn(txt) {
+      var ta = document.getElementById("expr");
+      var start = ta.selectionStart;
+      var end = ta.selectionEnd;
+      var current = ta.value;
+      ta.value = current.substring(0, start) + txt + current.substring(end);
+      ta.focus();
+      ta.selectionStart = ta.selectionEnd = start + txt.length;
+    }
+
+    function calcularLimite() {
+      var expr = document.getElementById("expr").value.trim();
+      var variable = document.getElementById("variable").value.trim();
+      var punto = document.getElementById("punto").value.trim();
+      if (!expr || !variable || !punto) {
+        document.getElementById("resultado").textContent = "⚠️ Llena todos los campos";
+        return;
+      }
+
+      if (punto === "1") punto = Infinity;
+      else if (punto === "2") punto = -Infinity;
+      else if (!isNaN(punto)) punto = parseFloat(punto);
+
+      try {
+        const compiled = math.compile(expr);
+        const result = math.evaluate(`limit(${expr}, ${variable}, ${punto})`);
+        document.getElementById("resultado").textContent = `Límite = ${result}`;
+      } catch (e) {
+        document.getElementById("resultado").textContent = "❌ Error: " + e.message;
+      }
+    }
+  </script>
 </body>
 </html>
